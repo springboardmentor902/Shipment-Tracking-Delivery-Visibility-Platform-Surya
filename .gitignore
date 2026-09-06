@@ -1,0 +1,27 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# Maven
+target/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+package-lock.json
+
+# Environment variables
+.env
