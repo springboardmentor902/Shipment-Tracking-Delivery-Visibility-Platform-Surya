@@ -1,0 +1,50 @@
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: trackship-db
+    databaseName: trackship_db
+    user: postgres
+    plan: free
+    region: oregon
+
+  # Spring Boot Backend
+  - type: web
+    name: trackship-backend
+    env: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://dpg-daepks2d0e5s739gc2rg-a:5432/trackship_db
+      - key: SPRING_DATASOURCE_USERNAME
+        value: trackship_db_user
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: fbvUNAwAAfcQnHAAStxj1FlXL72A309g
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
+      - key: JWT_SECRET
+        generateValue: true
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: BREVO_SMTP_USER
+        sync: false
+      - key: BREVO_SMTP_PASSWORD
+        sync: false
+    healthCheckPath: /actuator/health
+
+  # React Frontend
+  - type: web
+    name: trackship-frontend
+    env: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: trackship-backend
+          property: url
