@@ -11,9 +11,12 @@ class WebSocketService {
   connect(onConnectCallback, onErrorCallback) {
     if (this.client && this.connected) return;
 
-    const wsUrl = window.location.origin.includes('5173')
-      ? 'http://localhost:1022/api/ws/tracking'
-      : '/api/ws/tracking';
+    const baseUrl = import.meta.env.VITE_API_URL || '';
+    const wsUrl = baseUrl
+      ? `${baseUrl}/api/ws/tracking`
+      : (window.location.origin.includes('5173')
+        ? 'http://localhost:1022/api/ws/tracking'
+        : '/api/ws/tracking');
 
     this.client = new Client({
       webSocketFactory: () => new SockJS(wsUrl),
