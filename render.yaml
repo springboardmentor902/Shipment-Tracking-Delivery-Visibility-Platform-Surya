@@ -1,12 +1,4 @@
 services:
-  # PostgreSQL Database
-  - type: pserv
-    name: trackship-db
-    databaseName: trackship_db
-    user: postgres
-    plan: free
-    region: oregon
-
   # Spring Boot Backend
   - type: web
     name: trackship-backend
@@ -32,7 +24,7 @@ services:
         sync: false
       - key: BREVO_SMTP_PASSWORD
         sync: false
-    healthCheckPath: /actuator/health
+    healthCheckPath: /
 
   # React Frontend
   - type: web

@@ -16,10 +16,10 @@ public class BrevoEmailService {
 
     private final JavaMailSender mailSender;
 
-    @Value("${brevo.sender.email:'suryalbrcem9@gmail.com'}")
+    @Value("${brevo.sender.email:suryalbrcem9@gmail.com}")
     private String senderEmail;
 
-    @Value("${brevo.sender.name:'ShipTrack Pro'}")
+    @Value("${brevo.sender.name:ShipTrack Pro}")
     private String senderName;
 
     private static final String DEFAULT_EMAIL = "suryalbrcem9@gmail.com";
@@ -83,11 +83,14 @@ public class BrevoEmailService {
     }
 
     private void sendSmtpEmail(String recipientEmail, String subject, String htmlContent) {
+        String effectiveSender = (senderEmail != null && !senderEmail.trim().isEmpty()) ? senderEmail.trim() : DEFAULT_EMAIL;
+        String effectiveName = (senderName != null && !senderName.trim().isEmpty()) ? senderName.trim() : "ShipTrack Pro";
+
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom(senderEmail, senderName);
+            helper.setFrom(effectiveSender, effectiveName);
             helper.setTo(recipientEmail);
             helper.setSubject(subject);
             helper.setText(htmlContent, true);
@@ -96,7 +99,16 @@ public class BrevoEmailService {
             log.info("Successfully dispatched Brevo SMTP email to {} for subject: {}", recipientEmail, subject);
 
         } catch (Exception e) {
-            log.error("Failed to send Brevo SMTP email to {}: {}", recipientEmail, e.getMessage());
+            log.error("Failed to send Brevo SMTP email to {}: {} (Cause: {})", 
+                    recipientEmail, e.getMessage(), e.getCause() != null ? e.getCause().getMessage() : "Unknown");
+            log.warn("Please verify BREVO_SMTP_USER and BREVO_SMTP_PASSWORD environment variables or Brevo dashboard SMTP key settings.");
+            
+            // Console/Mock Fallback for Local Development & Testing
+            String textPreview = htmlContent.replaceAll("<[^>]*>", " ").replaceAll("\\s+", " ").trim();
+            if (textPreview.length() > 120) {
+                textPreview = textPreview.substring(0, 120) + "...";
+            }
+            log.info("[EMAIL MOCK FALLBACK] To: {} | Subject: {} | Content Preview: {}", recipientEmail, subject, textPreview);
         }
     }
 

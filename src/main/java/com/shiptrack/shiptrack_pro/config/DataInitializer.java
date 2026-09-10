@@ -48,20 +48,7 @@ public class DataInitializer implements CommandLineRunner {
         // Create test proof of deliveries
         createTestPODs();
 
-        // Update all existing shipments to set senderEmail and receiverEmail to suryalbrcem9@gmail.com
-        updateExistingShipmentEmails();
-
         log.info("Test data initialization completed.");
-    }
-
-    private void updateExistingShipmentEmails() {
-        java.util.List<Shipment> shipments = shipmentRepository.findAll();
-        for (Shipment s : shipments) {
-            s.setSenderEmail("suryalbrcem9@gmail.com");
-            s.setReceiverEmail("suryalbrcem9@gmail.com");
-        }
-        shipmentRepository.saveAll(shipments);
-        log.info("Updated senderEmail and receiverEmail to suryalbrcem9@gmail.com for all {} shipments.", shipments.size());
     }
 
     // ============================================================
